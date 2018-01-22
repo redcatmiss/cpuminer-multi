@@ -255,6 +255,82 @@ void cryptonight_hash_ctx_aes_ni(void* output, const void* input, size_t len, st
 }
 
 int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
+                    uint32_t max_nonce, uint64_t *hashes_done)
+{
+	uint32_t n = pdata[19] - 1;
+	const uint32_t first_nonce = pdata[19];
+	const uint32_t Htarg = ptarget[7];
+
+	uint32_t hash64[8] __attribute__((aligned(32)));
+	uint32_t endiandata[32];
+
+	uint64_t htmax[] = {
+		0,
+		0xF,
+		0xFF,
+		0xFFF,
+		0xFFFF,
+		0x10000000
+	};
+	uint32_t masks[] = {
+		0xFFFFFFFF,
+		0xFFFFFFF0,
+		0xFFFFFF00,
+		0xFFFFF000,
+		0xFFFF0000,
+		0
+	};
+
+	struct cryptonight_ctx *ctx = (struct cryptonight_ctx*)malloc(sizeof(struct cryptonight_ctx));
+
+	// we need bigendian data...
+	for (int kk=0; kk < 32; kk++) {
+		be32enc(&endiandata[kk], ((uint32_t*)pdata)[kk]);
+	};
+#ifdef DEBUG_ALGO
+	if (Htarg != 0)
+		printf("[%d] Htarg=%X\n", thr_id, Htarg);
+#endif
+	for (int m=0; m < sizeof(masks); m++) {
+		if (Htarg <= htmax[m]) {
+			uint32_t mask = masks[m];
+			do {
+				pdata[19] = ++n;
+				be32enc(&endiandata[19], n);
+	//			x15hash(hash64, &endiandata);
+				if (aes_ni_supported) {
+					cryptonight_hash_ctx_aes_ni(hash64, &endiandata, 80, ctx);
+				} else {
+					cryptonight_hash_ctx(hash64, &endiandata, 80, ctx);
+				}
+#ifndef DEBUG_ALGO
+				if ((!(hash64[7] & mask)) && fulltest(hash64, ptarget)) {
+					*hashes_done = n - first_nonce + 1;
+					return true;
+				}
+#else
+				if (!(n % 0x1000) && !thr_id) printf(".");
+				if (!(hash64[7] & mask)) {
+					printf("[%d]",thr_id);
+					if (fulltest(hash64, ptarget)) {
+						*hashes_done = n - first_nonce + 1;
+						return true;
+					}
+				}
+#endif
+			} while (n < max_nonce && !work_restart[thr_id].restart);
+			// see blake.c if else to understand the loop on htmax => mask
+			break;
+		}
+	}
+
+	*hashes_done = n - first_nonce + 1;
+	pdata[19] = n;
+	return 0;
+}
+
+/*
+int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 		uint32_t max_nonce, uint64_t *hashes_done) {
 	uint32_t *nonceptr = (uint32_t*) (((char*)pdata) + 39);
 	uint32_t n = *nonceptr - 1;
@@ -265,6 +341,7 @@ int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 	struct cryptonight_ctx *ctx = (struct cryptonight_ctx*)malloc(sizeof(struct cryptonight_ctx));
 
 	if (aes_ni_supported) {
+printf("WTF\n");
 		do {
 			*nonceptr = ++n;
 			cryptonight_hash_ctx_aes_ni(hash, pdata, 76, ctx);
@@ -290,3 +367,5 @@ int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 	*hashes_done = n - first_nonce + 1;
 	return 0;
 }
+*/
+

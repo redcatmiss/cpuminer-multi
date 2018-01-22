@@ -559,6 +559,7 @@ static void share_result(int result, struct work *work, const char *reason) {
     pthread_mutex_unlock(&stats_lock);
 
     switch (opt_algo) {
+/*
     case ALGO_CRYPTONIGHT:
         applog(LOG_INFO, "accepted: %lu/%lu (%.2f%%), %.2f H/s at diff %g %s",
                 accepted_count, accepted_count + rejected_count,
@@ -566,6 +567,7 @@ static void share_result(int result, struct work *work, const char *reason) {
                 (((double) 0xffffffff) / (work ? work->target[7] : rpc2_target)),
                 result ? "(yay!!!)" : "(booooo)");
         break;
+*/
     default:
         sprintf(s, hashrate >= 1e6 ? "%.0f" : "%.2f", 1e-3 * hashrate);
         applog(LOG_INFO, "accepted: %lu/%lu (%.2f%%), %s khash/s %s",
@@ -1026,7 +1028,7 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work) {
             free(xnonce2str);
         }
 
-        if (opt_algo == ALGO_SCRYPT)
+        if (opt_algo == ALGO_SCRYPT || opt_algo == ALGO_CRYPTONIGHT)
             diff_to_target(work->target, sctx->job.diff / 65536.0);
         else
             diff_to_target(work->target, sctx->job.diff);
@@ -1853,7 +1855,7 @@ int main(int argc, char *argv[]) {
 	} else if (opt_algo == ALGO_BLAKE) {
 		init_blakehash_contexts();
 	} else if(opt_algo == ALGO_CRYPTONIGHT) {
-		jsonrpc_2 = true;
+//		jsonrpc_2 = true;
 		aes_ni_supported = has_aes_ni();
 		applog(LOG_INFO, "Using JSON-RPC 2.0");
 		applog(LOG_INFO, "CPU Supports AES-NI: %s", aes_ni_supported ? "YES" : "NO");
