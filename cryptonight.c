@@ -306,6 +306,7 @@ int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 #ifndef DEBUG_ALGO
 				if ((!(hash64[7] & mask)) && fulltest(hash64, ptarget)) {
 					*hashes_done = n - first_nonce + 1;
+					free(ctx);
 					return true;
 				}
 #else
@@ -314,6 +315,7 @@ int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 					printf("[%d]",thr_id);
 					if (fulltest(hash64, ptarget)) {
 						*hashes_done = n - first_nonce + 1;
+						free(ctx);
 						return true;
 					}
 				}
@@ -324,6 +326,7 @@ int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 		}
 	}
 
+	free(ctx);
 	*hashes_done = n - first_nonce + 1;
 	pdata[19] = n;
 	return 0;
