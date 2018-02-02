@@ -74,3 +74,6 @@ minerd_LDFLAGS	= $(PTHREAD_FLAGS)
 minerd_LDADD	= @LIBCURL@ @JANSSON_LIBS@ @PTHREAD_LIBS@ @WS2_LIBS@
 minerd_CPPFLAGS = @LIBCURL_CPPFLAGS@
 minerd_CFLAGS   = -Ofast -flto -fuse-linker-plugin
+
+
+ACLOCAL_AMFLAGS = -I m4

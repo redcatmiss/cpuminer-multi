@@ -104,6 +104,7 @@ AC_CHECK_LIB([pthread], [pthread_create], PTHREAD_LIBS="-lpthread",
 
 AC_CHECK_LIB([crypto], [OPENSSL_init], [], [AC_MSG_FAILURE([could not find crypto])])
 
+
 AC_MSG_CHECKING(whether __uint128_t is supported)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([static __uint128_t i = 100;])],
       AC_DEFINE(USE_INT128, 1, [Define if __uint128_t is available])
