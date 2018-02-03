@@ -1840,6 +1840,7 @@ static bool has_aes_ni()
 }
 
 int main(int argc, char *argv[]) {
+    applog(LOG_INFO, "Start Mining...");
 	struct thr_info *thr;
 	long flags;
 	int i;

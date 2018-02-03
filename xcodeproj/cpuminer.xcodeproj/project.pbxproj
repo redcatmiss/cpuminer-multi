@@ -28,7 +28,7 @@
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = "/Users/redcat/Desktop/cpuminer/cpuminer-multi";
+			buildWorkingDirectory = "~/Documents/mining/cpuminer-multi";
 			dependencies = (
 			);
 			name = cpuminer;
@@ -201,7 +201,7 @@
 				BA3057882024B7D100373CF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		BA3057892024B7D100373CF3 /* Build configuration list for PBXLegacyTarget "cpuminer" */ = {
 			isa = XCConfigurationList;
@@ -210,7 +210,7 @@
 				BA30578B2024B7D100373CF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
